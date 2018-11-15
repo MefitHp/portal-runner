@@ -14,6 +14,7 @@ var platforms = []
 var coins = []
 var obstacles = []
 var portals = []
+var score = 0
 var images = {
     world1: {
         bg: './assets/World_1/Background.png'
@@ -25,6 +26,7 @@ var images = {
         },
         pads: ['./assets/World_2/Pad1.png', './assets/World_2/Pad2.png'],
         coin: './assets/World_2/coin1.png',
+        obstacle: './assets/World_2/obstacle1.png',
     },
     world3: {
         bg: './assets/World_3/Background.png',
@@ -35,6 +37,7 @@ var images = {
         coin: './assets/World_3/coin1.png',
         obstacle: './assets/World_3/obstacle1.png'
     },
+    welcomeSc: './assets/Main.jpg',
     bat: './assets/World_3/bat1.png',
     portals: ['./assets/Portals/GreenPortal.png', './assets/Portals/PurplePortal.png']
 }
@@ -91,10 +94,10 @@ function Character(x, y, width, height, images) {
 
     }
     this.isTouching = (item) => {
-        return (this.x < item.x + item.width / 3) &&
-            (this.x + this.width > item.x + this.height / 3) &&
-            (this.y < item.y + item.height / 3) &&
-            (this.y + this.height > item.y + this.width / 3);
+        return (this.x < item.x + item.width / 2) &&
+            (this.x + this.width > item.x + this.height / 2) &&
+            (this.y < item.y + item.height / 2) &&
+            (this.y + this.height > item.y + this.width / 2);
     }
 }
 
@@ -165,19 +168,29 @@ function Portal(y, image) {
 
 //instances
 //world1
+var bg = new Board(images.welcomeSc)
 var world1 = new Board(images.world1.bg)
 //world2
 var world2 = new Board(images.world2.bg)
-var player2 = new Character(50, 425, 200, 200, images.world2.character.run)
+var player2 = new Character(50, 425, 120, 120, images.world2.character.run)
 //world3
 var world3 = new Board(images.world3.bg)
 var player3 = new Character(50, 425, 120, 120, images.world3.character.run)
 //
 var portal = new Portal(450, images.portals[0])
 
+var bgMusic = new Audio()
+bgMusic.src = "./assets/Waves.mp3"
+var youlose = new Audio()
+youlose.src = "./assets/SAD.mp3"
 
 //main functions
 function start() {
+    if (bgMusic.paused) {
+        bgMusic.play()
+        youlose.pause();
+        youlose.currentTime = 0;
+    }
     frames = 0
     if (!interval) interval = setInterval(update, 300 / 60)
 
@@ -207,6 +220,9 @@ function gameOver() {
     platforms = []
     coins = []
     obstacles = []
+    bgMusic.pause()
+    bgMusic.currentTime = 0;
+    youlose.play()
 }
 
 
@@ -246,7 +262,7 @@ function generateObstacles(image) {
 function generatePlatforms(images) {
     if (frames % 250 === 0) {
         if (platforms.length >= 5) platforms.shift()
-        var width = Math.floor(Math.random() * 400 + 50)
+        var width = Math.floor(Math.random() * 400 + 100)
         var y = Math.floor(Math.random() * (500 - 200 + 1)) + 200;
         platforms.push(new Platform(y, width, images))
     }
@@ -326,14 +342,17 @@ function collisionCheck(char, plat) {
 function checkCoinCollition() {
     for (var coin of coins) {
         if (currentPlayer.isTouching(coin)) {
+            score += 10
             coins.splice(coins.indexOf(coin), 1)
         }
     }
 }
 
 function drawScore() {
-    ctx.font = "bold 24px 'Press Start 2P'"
-    ctx.fillText("Score: " + Math.floor(frames / 60), 50, 50)
+    ctx.font = "30px Arial"
+    ctx.fillStyle = "White"
+    score = Math.floor(frames / 60)
+    ctx.fillText("Score: " + score, 100, 100)
 }
 
 function checkObstacleCollition() {
@@ -356,6 +375,15 @@ function checkPlatformCollition() {
     });
 }
 
+function drawCover() {
+    var img = new Image()
+    img.src = images.welcomeSc
+    img.onload = () => {
+        bg.draw()
+    }
+}
+
+
 //listeners
 addEventListener('keyup', function (e) {
     switch (e.keyCode) {
@@ -372,7 +400,6 @@ addEventListener('keyup', function (e) {
 addEventListener('keydown', function (e) {
     switch (e.keyCode) {
         case 32:
-
             if (!currentPlayer.jumping) {
                 currentPlayer.y_velocity -= 7
                 currentPlayer.jumping = true
@@ -383,3 +410,5 @@ addEventListener('keydown', function (e) {
             return
     }
 })
+
+drawCover()
