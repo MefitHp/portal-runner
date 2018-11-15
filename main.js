@@ -447,6 +447,7 @@ function checkPortalCollition() {
                         var pos = Math.round(Math.random())
                         console.log('new world' + pos)
                         world = worldsLeft[pos]
+                        score += 50
                         break;
 
                     case 2:
@@ -454,12 +455,14 @@ function checkPortalCollition() {
                         var pos = Math.round(Math.random())
                         console.log('new world' + pos)
                         world = worldsLeft[pos]
+                        score += 50
                         break;
                     case 3:
                         worldsLeft = [1, 2]
                         var pos = Math.round(Math.random())
                         console.log('new world' + pos)
                         world = worldsLeft[pos]
+                        score += 50
                         break;
                     default:
                         break;
