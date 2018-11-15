@@ -15,6 +15,7 @@ var coins = []
 var obstacles = []
 var portals = []
 var score = 0
+var pressedBtn
 var images = {
     world1: {
         bg: './assets/World_1/Background.png',
@@ -26,7 +27,7 @@ var images = {
         obstacle: './assets/World_1/obstacle2.png',
     },
     world2: {
-        bg: './assets/World_2/Background.png',
+        bg: './assets/World_2/Background3.jpg',
         character: {
             run: ['./assets/World_3/run1.png', './assets/World_3/run2.png', './assets/World_3/run3.png', './assets/World_3/run4.png', './assets/World_3/run5.png', './assets/World_3/run6.png', './assets/World_3/run7.png', './assets/World_3/run8.png',]
         },
@@ -68,8 +69,8 @@ function Board(bgImage) {
 }
 
 function Character(x, y, width, height, images) {
-    this.x = x || 50
-    this.y = y || 300
+    this.x = x
+    this.y = y
     this.width = width || 200
     this.height = height || 200
     this.jumping = true
@@ -94,7 +95,7 @@ function Character(x, y, width, height, images) {
     }
     this.boundaries = function () {
         if (this.y + this.height > canvas.height - 95) {
-            this.y = canvas.height - this.height - 95
+            this.y = canvas.height - this.height - 100
             this.y_velocity = 0
             this.jumping = false
         }
@@ -102,10 +103,10 @@ function Character(x, y, width, height, images) {
 
     }
     this.isTouching = (item) => {
-        return (this.x < item.x + item.width / 2) &&
-            (this.x + this.width > item.x + this.height / 2) &&
-            (this.y < item.y + item.height / 2) &&
-            (this.y + this.height > item.y + this.width / 2);
+        return (this.x < item.x + item.width / 10) &&
+            (this.x + this.width > item.x + this.height / 10) &&
+            (this.y < item.y + item.height / 10) &&
+            (this.y + this.height > item.y + this.width / 10)
     }
 }
 
@@ -176,11 +177,13 @@ function Portal(y, image, type) {
 }
 
 //instances
+var button = new Image()
+
+
 //world1
 var bg = new Board(images.welcomeSc)
 var world1 = new Board(images.world1.bg)
-var player1 = new Character(0, 0, 70, 70, images.world1.character.run)
-console.log(player1)
+var player1 = new Character(50, 425, 100, 100, images.world1.character.run)
 //world2
 var world2 = new Board(images.world2.bg)
 var player2 = new Character(50, 425, 120, 120, images.world2.character.run)
@@ -196,6 +199,7 @@ youlose.src = "./assets/SAD.mp3"
 
 //main functions
 function start() {
+    score = 0
     if (bgMusic.paused) {
         bgMusic.play()
         youlose.pause();
@@ -206,23 +210,63 @@ function start() {
 
 }
 var currentPlayer
-currentPlayer = player1
+var world = 3
 
 function update() {
     frames++
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    world1.draw()
-    currentPlayer.draw()
-    // portal.draw()
-    drawPlatforms(images.world1.pads)
-    drawCoins(images.world1.coin)
-    drawObstacles(images.world1.obstacle)
-    drawPortals()
-    checkCoinCollition()
-    checkPlatformCollition()
-    checkObstacleCollition()
-    checkPortalCollition()
-    drawScore()
+    switch (world) {
+        case 3:
+            currentPlayer = player3
+            world3.draw()
+            player3.draw()
+            drawPlatforms(images.world3.pads)
+            drawCoins(images.world3.coin)
+            drawObstacles(images.world3.obstacle)
+            drawPortals()
+            checkCoinCollition()
+            checkPlatformCollition()
+            checkObstacleCollition()
+            checkPortalCollition()
+            drawScore()
+            ctx.drawImage(button, 100, 650, 100, 50)
+            break;
+
+        case 2:
+            currentPlayer = player2
+            world2.draw()
+            player2.draw()
+            drawPlatforms(images.world2.pads)
+            drawCoins(images.world2.coin)
+            drawObstacles(images.world2.obstacle)
+            drawPortals()
+            checkCoinCollition()
+            checkPlatformCollition()
+            checkObstacleCollition()
+            checkPortalCollition()
+            drawScore()
+            ctx.drawImage(button, 100, 650, 100, 50)
+            break;
+
+        case 1:
+            currentPlayer = player1
+            world1.draw()
+            player1.draw()
+            drawPlatforms(images.world1.pads)
+            drawCoins(images.world1.coin)
+            drawObstacles(images.world1.obstacle)
+            drawPortals()
+            checkCoinCollition()
+            checkPlatformCollition()
+            checkObstacleCollition()
+            checkPortalCollition()
+            drawScore()
+            ctx.drawImage(button, 100, 650, 100, 50)
+            break;
+        default:
+            break;
+    }
+
 }
 
 function gameOver() {
@@ -232,10 +276,19 @@ function gameOver() {
     coins = []
     obstacles = []
     portals = []
-    score = 0
+    pressedBtn = ""
     bgMusic.pause()
     bgMusic.currentTime = 0;
     youlose.play()
+    ctx.font = "bold 80px Arial"
+    ctx.fillText("GAME OVER", 300, 200)
+    ctx.fillStyle = "black"
+    ctx.font = "bold 40px Arial"
+    ctx.fillText("Score: " + score, 300, 280)
+    ctx.font = "bold 20px Arial"
+    ctx.fillText("Presiona 'Return' para reiniciar", 300, 350)
+    ctx.fillStyle = "brown"
+
 }
 
 
@@ -385,7 +438,39 @@ function checkObstacleCollition() {
 function checkPortalCollition() {
     for (var portal of portals) {
         if (currentPlayer.isTouching(portal)) {
-            console.log(portal.type)
+            if (portal.type === pressedBtn) {
+                var worldsLeft = []
+                console.log(world)
+                switch (world) {
+                    case 1:
+                        worldsLeft = [2, 3]
+                        var pos = Math.round(Math.random())
+                        console.log('new world' + pos)
+                        world = worldsLeft[pos]
+                        break;
+
+                    case 2:
+                        worldsLeft = [1, 3]
+                        var pos = Math.round(Math.random())
+                        console.log('new world' + pos)
+                        world = worldsLeft[pos]
+                        break;
+                    case 3:
+                        worldsLeft = [1, 2]
+                        var pos = Math.round(Math.random())
+                        console.log('new world' + pos)
+                        world = worldsLeft[pos]
+                        break;
+                    default:
+                        break;
+                }
+                coins = []
+                obstacles = []
+            }
+            else {
+                gameOver()
+
+            }
         }
     }
 }
@@ -420,10 +505,12 @@ addEventListener('keyup', function (e) {
             currentPlayer.y_velocity = 2.5
             return
         case 65:
-            console.log('Pressed A');
+            button.src = './assets/Keys/A-Key.png'
+            pressedBtn = 'verde'
             return
         case 83:
-            console.log('Pressed S');
+            button.src = './assets/Keys/S-Key.png'
+            pressedBtn = 'morado'
             return
         default:
             return
