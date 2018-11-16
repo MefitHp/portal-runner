@@ -20,7 +20,7 @@ var images = {
     world1: {
         bg: './assets/World_1/Background.png',
         character: {
-            run: ['./assets/World_1/run1.png', './assets/World_1/run2.png', './assets/World_1/run3.png']
+            run: ['./assets/World_1/run1.png', './assets/World_1/run2.png', './assets/World_1/run3.png', './assets/World_1/run1.png',]
         },
         pads: ['./assets/World_1/Pad1.png', './assets/World_1/Pad2.png'],
         coin: './assets/World_1/Coin1.png',
@@ -29,7 +29,7 @@ var images = {
     world2: {
         bg: './assets/World_2/Background3.jpg',
         character: {
-            run: ['./assets/World_3/run1.png', './assets/World_3/run2.png', './assets/World_3/run3.png', './assets/World_3/run4.png', './assets/World_3/run5.png', './assets/World_3/run6.png', './assets/World_3/run7.png', './assets/World_3/run8.png',]
+            run: ['./assets/World_3/run1.png', './assets/World_3/run2.png', './assets/World_3/run3.png', './assets/World_3/run4.png']
         },
         pads: ['./assets/World_2/Pad1.png', './assets/World_2/Pad2.png'],
         coin: './assets/World_2/coin1.png',
@@ -38,7 +38,7 @@ var images = {
     world3: {
         bg: './assets/World_3/Background.png',
         character: {
-            run: ['./assets/World_2/run1.png', './assets/World_2/run2.png', './assets/World_2/run3.png', './assets/World_2/run4.png', './assets/World_2/run5.png', './assets/World_2/run6.png']
+            run: ['./assets/World_2/run1.png', './assets/World_2/run2.png', './assets/World_2/run3.png', './assets/World_2/run4.png']
         },
         pads: ['./assets/World_3/Pad1.png', './assets/World_3/Pad2.png'],
         coin: './assets/World_3/coin1.png',
@@ -75,21 +75,27 @@ function Character(x, y, width, height, images) {
     this.height = height || 200
     this.jumping = true
     this.position = 0
-    this.character = new Image()
-    this.character.src = images[this.position]
+    this.frame1 = new Image()
+    this.frame1.src = images[0]
+    this.frame2 = new Image()
+    this.frame2.src = images[1]
+    this.frame3 = new Image()
+    this.frame3.src = images[2]
+    this.frame4 = new Image()
+    this.frame4.src = images[3]
     this.y_velocity = 2.5
     this.grounded = false
+    this.fps = [this.frame1, this.frame2, this.frame3, this.frame4]
     this.draw = () => {
         this.boundaries()
-        ctx.drawImage(this.character, this.x, this.y, this.width, this.height)
+        ctx.drawImage(this.fps[this.position], this.x, this.y, this.width, this.height)
 
         if (frames % 10 === 0) {
             switch (this.position) {
-                case images.length - 1:
+                case this.fps.length - 1:
                     this.position = 0
                 default:
                     this.position += 1
-                    this.character.src = images[this.position]
             }
         }
     }
@@ -206,10 +212,10 @@ function start() {
         youlose.currentTime = 0;
     }
     frames = 0
-    if (!interval) interval = setInterval(update, 300 / 60)
+    if (!interval) interval = setInterval(update, 500 / 60)
 
 }
-var currentPlayer
+var currentPlayer = 3
 var world = 3
 
 function update() {
@@ -376,7 +382,7 @@ function drawObstacles(images) {
 }
 
 function collisionCheck(char, plat) {
-    var vectorX = (char.x + (char.width / 2)) - (plat.x + (plat.width / 2)) + 50;
+    var vectorX = (char.x + (char.width / 2)) - (plat.x + (plat.width / 2));
     var vectorY = (char.y + (char.height / 2)) - (plat.y + (plat.height / 2));
 
 
