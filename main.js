@@ -184,6 +184,7 @@ function Portal(y, image, type) {
 
 //instances
 var button = new Image()
+var portalImg = new Image()
 
 
 //world1
@@ -236,6 +237,7 @@ function update() {
             checkPortalCollition()
             drawScore()
             ctx.drawImage(button, 100, 650, 100, 50)
+            ctx.drawImage(portalImg, 250, 600, 50, 100)
             break;
 
         case 2:
@@ -252,6 +254,7 @@ function update() {
             checkPortalCollition()
             drawScore()
             ctx.drawImage(button, 100, 650, 100, 50)
+            ctx.drawImage(portalImg, 220, 620, 50, 100)
             break;
 
         case 1:
@@ -268,6 +271,7 @@ function update() {
             checkPortalCollition()
             drawScore()
             ctx.drawImage(button, 100, 650, 100, 50)
+            ctx.drawImage(portalImg, 250, 600, 50, 100)
             break;
         default:
             break;
@@ -515,10 +519,12 @@ addEventListener('keyup', function (e) {
             return
         case 65:
             button.src = './assets/Keys/A-Key.png'
+            portalImg.src = './assets/Portals/GreenPortal.png'
             pressedBtn = 'verde'
             return
         case 83:
             button.src = './assets/Keys/S-Key.png'
+            portalImg.src = './assets/Portals/PurplePortal.png'
             pressedBtn = 'morado'
             return
         default:
